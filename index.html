@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ESP32 LED - MQTT Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="header">
+    <div>
+      <h1>ESP32 LED · MQTT Dashboard</h1>
+      <p class="sub">Control ON/OFF + estado de conexión + consola de eventos</p>
+    </div>
+
+    <div class="badges">
+      <span id="connBadge" class="badge badge--off">MQTT: Desconectado</span>
+      <span id="subBadge" class="badge badge--muted">SUB: —</span>
+    </div>
+  </header>
+
+  <main class="grid">
+    <!-- Panel de configuración -->
+    <section class="card">
+      <h2>Conexión</h2>
+
+      <label class="field">
+        <span>Broker (WSS)</span>
+        <input id="broker" type="text" placeholder="wss://test.mosquitto.org:8081/mqtt" />
+        <small>La web requiere WebSocket (wss://...).</small>
+      </label>
+
+      <div class="row">
+        <label class="field">
+          <span>Tópico CMD</span>
+          <input id="topicCmd" type="text" placeholder="huber/esp32/led/cmd" />
+        </label>
+
+        <label class="field">
+          <span>Tópico STATE</span>
+          <input id="topicState" type="text" placeholder="huber/esp32/led/state" />
+        </label>
+      </div>
+
+      <div class="row">
+        <label class="field">
+          <span>QoS</span>
+          <select id="qos">
+            <option value="0">0</option>
+            <option value="1">1</option>
+          </select>
+        </label>
+
+        <label class="field field--checkbox">
+          <input id="retain" type="checkbox" />
+          <span>Retain</span>
+        </label>
+
+        <label class="field field--checkbox">
+          <input id="autoConnect" type="checkbox" />
+          <span>Auto-conectar</span>
+        </label>
+      </div>
+
+      <div class="actions">
+        <button id="btnConnect" class="btn btn--primary">Conectar</button>
+        <button id="btnDisconnect" class="btn" disabled>Desconectar</button>
+      </div>
+
+      <div class="divider"></div>
+
+      <h2>Control LED</h2>
+
+      <div class="ledBox">
+        <div class="ledIndicator">
+          <span id="ledDot" class="dot dot--unknown"></span>
+          <div>
+            <div class="ledTitle">LED</div>
+            <div id="ledText" class="ledState">Desconocido</div>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button id="btnOn" class="btn btn--success" disabled>ON</button>
+          <button id="btnOff" class="btn btn--danger" disabled>OFF</button>
+          <button id="btnAsk" class="btn" disabled>Solicitar estado</button>
+        </div>
+
+        <small class="hint">
+          “Solicitar estado” publica <code>STATUS</code> en CMD (requiere que el ESP32 lo implemente).
+          Si no lo implementas, ignóralo; igual recibes el estado por <code>STATE</code> si es retain.
+        </small>
+      </div>
+    </section>
+
+    <!-- Consola -->
+    <section class="card">
+      <div class="consoleHeader">
+        <h2>Consola</h2>
+        <div class="consoleActions">
+          <label class="field field--checkbox">
+            <input id="autoscroll" type="checkbox" checked />
+            <span>Auto-scroll</span>
+          </label>
+          <button id="btnClear" class="btn">Limpiar</button>
+        </div>
+      </div>
+
+      <div id="console" class="console" aria-live="polite"></div>
+
+      <div class="footerInfo">
+        <div><b>Tip:</b> Abre DevTools → Console para ver logs también.</div>
+      </div>
+    </section>
+  </main>
+
+  <!-- MQTT.js (CDN) -->
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
